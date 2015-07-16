@@ -2,6 +2,8 @@
 
 from flask import Flask, request, abort, Response
 from functools import wraps
+from uuid import uuid4
+
 app = Flask(__name__)
 
 class NoUserException(Exception):
@@ -37,10 +39,10 @@ class Sensor(object):
         pass
 
     def get_api_key(self):
-        return "abcdef"
+        return str(uuid4().hex)
 
     def get_uuid(self):
-        return "1234567890"
+        return str(uuid4().hex)
 
 def get_user(email):
     # TODO check DB for email addresses
