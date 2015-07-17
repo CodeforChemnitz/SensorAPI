@@ -1,6 +1,8 @@
 # Sensor Data API
 
-This is the first implementation of our API to accept sensor data from a network of sensors via HTTP.
+This is the first implementation of our API to accept sensor data from a
+network of sensors via HTTP. Currently it uses SQLite to save the data
+to `/tmp/sensor-data.db`.
 
 ## Requirements
 
