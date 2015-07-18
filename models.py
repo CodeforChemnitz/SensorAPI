@@ -16,6 +16,7 @@ class User(Base):
     email = Column(String(255), unique=True, nullable=False)
     password = Column(String(96))  # 32 salt + 64 sha256
     approved = Column(Boolean, default=False)
+    approval_code = Column(String(32), default=uuid)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     def __repr__(self):
@@ -49,7 +50,7 @@ class SensorType(Base):
 class SensorValue(Base):
     __tablename__ = 'sensorvalues'
 
-    id = Column(Integer, nullable=False)
+    id = Column(Integer, nullable=False, primary_key=True)
     value = Column(Float, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, primary_key=True)
     sensor_id = Column(Integer, ForeignKey('sensors.id'), primary_key=True)
