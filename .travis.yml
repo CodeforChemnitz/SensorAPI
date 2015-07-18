@@ -1,0 +1,16 @@
+language: python
+python:
+  - "2.7"
+  - "3.3"
+  - "3.4"
+sudo: false
+branches:
+  only:
+    master
+install:
+  - pip install -r requirements.txt
+  - pip install pyyaml pycurl git+git://github.com/morrisjobke/pyresttest.git
+script:
+  - python api.py &
+  - sleep 5
+  - pyresttest http://localhost:5000 tests/apiv1.yml

@@ -12,6 +12,14 @@ to `/tmp/sensor-data.db`.
 
     python api.py
 
+## Tests
+
+The tests only run in python2:
+
+    pip2 install pyresttest pyyaml pycurl
+    CI=true python api.py # this allows to use a predefined api key
+    python2 pyresttest http://localhost:5000/ tests/apiv1.yml
+
 ## License
 
 The MIT License (MIT)
