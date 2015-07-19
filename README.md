@@ -14,11 +14,11 @@ to `/tmp/sensor-data.db`.
 
 ## Tests
 
-The tests only run in python2:
+To run the tests:
 
-    pip2 install pyresttest pyyaml pycurl
+    pip install pyyaml pycurl git+git://github.com/morrisjobke/pyresttest.git
     CI=true python api.py # this allows to use a predefined api key
-    python2 pyresttest http://localhost:5000/ tests/apiv1.yml
+    pyresttest http://localhost:5000/ tests/apiv1.yml
 
 ## License
 
