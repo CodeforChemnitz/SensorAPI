@@ -9,8 +9,10 @@ branches:
     master
 install:
   - pip install -r requirements.txt
-  - pip install pyyaml pycurl git+git://github.com/morrisjobke/pyresttest.git
-script:
+  - pip install -r requirements-test.txt
+before_script:
   - python api.py &
-  - sleep 5
-  - pyresttest http://localhost:5000 tests/apiv1.yml
+  - sleep 5 # give server time to start
+script:
+  - cd tests
+  - python run.py

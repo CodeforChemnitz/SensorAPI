@@ -16,9 +16,10 @@ to `/tmp/sensor-data.db`.
 
 To run the tests:
 
-    pip install pyyaml pycurl git+git://github.com/morrisjobke/pyresttest.git
+    pip install -r requirements-test.txt
     CI=true python api.py # this allows to use a predefined api key
-    pyresttest http://localhost:5000/ tests/apiv1.yml
+    cd tests
+    python run.py
 
 ## License
 
