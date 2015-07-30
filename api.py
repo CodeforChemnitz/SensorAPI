@@ -1,4 +1,5 @@
-#!/bin/env python3
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 from functools import wraps
 from uuid import uuid4
@@ -63,7 +64,7 @@ class UsersResource(ApiResource):
         try:
             db_session.commit()
         except IntegrityError:
-            return {'message': 'email address already exists'}, 409
+            return {'message': 'email address already in use'}, 409
 
         return {'id': user.id, 'email': user.email, 'created_at': str(user.created_at)}
 
@@ -110,7 +111,7 @@ class SensorsResource(ApiResource):
             try:
                 db_session.commit()
             except ValueError:
-                return {'message': 'Sensor name is invalid'}, 409
+                return {'message': 'Sensor name is invalid'}, 400
 
             return "id:%s\napikey:%s" % (sensor.id, sensor.api_key), 200, {'Content-Type': 'text/plain'}
         except NoResultFound:

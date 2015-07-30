@@ -1,0 +1,13 @@
+APIv1.md
+
+Create an user
+    Template: Create an user
+    Status: 200
+
+Create an existing user
+    Template: Create an user
+    Status: 409
+
+Create a sensor with an invalid user
+    Template: Create a sensor
+    Status: 412

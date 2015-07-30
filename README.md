@@ -12,6 +12,15 @@ to `/tmp/sensor-data.db`.
 
     python api.py
 
+## Tests
+
+To run the tests:
+
+    pip install -r requirements-test.txt
+    CI=true python api.py # this allows to use a predefined api key
+    cd tests
+    python run.py
+
 ## License
 
 The MIT License (MIT)
