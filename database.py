@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # copy of the SQLAlchemy tutorial
 # http://flask.pocoo.org/docs/0.10/patterns/sqlalchemy/
 from sqlalchemy import create_engine
