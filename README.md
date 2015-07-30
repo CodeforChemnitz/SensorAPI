@@ -1,5 +1,7 @@
 # Sensor Data API
 
+[![Build Status](https://travis-ci.org/CodeforChemnitz/SensorAPI.svg?branch=master)](https://travis-ci.org/CodeforChemnitz/SensorAPI)
+
 This is the first implementation of our API to accept sensor data from a
 network of sensors via HTTP. Currently it uses SQLite to save the data
 to `/tmp/sensor-data.db`.
