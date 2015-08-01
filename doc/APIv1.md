@@ -94,3 +94,58 @@ If the name is not valid (more than 255 charaters) then you get following respon
     {
         "message": "Sensor name is invalid"
     }
+
+## Add sensor values
+
+To add new values to the sensor you need to send following GET. The HTTP headers X-Sensor-Api-Key 
+and X-Sensor-Version are mandatory. The payload is CSV containing the sensor ID as first 
+column, the sensor type ID as second column, and the value of the sensor as third column.
+
+    POST http://data.example.org/sensors/20b79b2689f8b9716
+    
+    HTTP/1.1
+    Host: data.example.org
+    X-Sensor-Api-Key: abcdef0123456789
+    X-Sensor-Version: 1
+    Content-Type: text/csv
+    
+    1,3,12.5
+    2,5,123
+
+You then get following response on success:
+
+    HTTP/1.1 200 Success
+
+    
+If you don't send the header X-Sensor-Api-Key at all you get the following response:
+
+
+    HTTP/1.1 401 Unauthorized
+    
+    Content-Type: application/json
+    
+    {
+        "message": "No API key in header found"
+    }
+
+
+If the key is invalid you get following response:
+
+    HTTP/1.1 401 Unauthorized
+    
+    Content-Type: application/json
+    
+    {
+        "message": "Invalid API key"
+    }
+
+If some lines or values (types) are invalid, then you'll get:
+
+    HTTP/1.1 400 Bad Request
+    
+    Content-Type: application/json
+    
+    {
+        "message": "Bad CSV lines"
+        "lines": [ ... ]
+    }
