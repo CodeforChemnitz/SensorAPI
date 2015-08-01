@@ -1,0 +1,20 @@
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    ServerName api.codeforchemnitz.de
+
+    DocumentRoot /srv/chemnitz-sensorapi
+
+    WSGIDaemonProcess chemnitzsensorapi python-path=/srv/chemnitz-sensorapi/:/srv/chemnitz-sensorapi/.virtualenv/lib/python2.7/site-packages/ threads=5
+    WSGIProcessGroup  chemnitzsensorapi
+    WSGIScriptAlias / /srv/chemnitz-sensorapi/deploy/wsgi.py
+
+    <Directory /srv/chemnitz-sensorapi/deploy>
+        <Files wsgi.py>
+            Require all granted
+        </Files>
+    </Directory>
+
+    LogLevel info
+    ErrorLog ${APACHE_LOG_DIR}/chemnitz.sensorAPI.error.log
+    CustomLog ${APACHE_LOG_DIR}/chemnitz.sensorAPI.access.log combined
+</VirtualHost>

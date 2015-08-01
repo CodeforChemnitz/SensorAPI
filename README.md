@@ -23,6 +23,10 @@ To run the tests:
     cd tests
     python run.py
 
+## Deployment
+
+    ansible-playbook -i server.name, -s deploy.yml
+
 ## License
 
 The MIT License (MIT)
