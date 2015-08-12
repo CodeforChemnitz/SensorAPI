@@ -163,4 +163,4 @@ api.add_resource(SensorsResource, '/sensors')
 api.add_resource(SensorValuesResource, '/sensors/<int:sensor_id>')
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', threaded=True)
