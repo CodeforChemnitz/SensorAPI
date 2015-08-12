@@ -113,7 +113,11 @@ class SensorsResource(ApiResource):
             except ValueError:
                 return {'message': 'Sensor name is invalid'}, 400
 
-            return "id:%s\napikey:%s" % (sensor.id, sensor.api_key), 200, {'Content-Type': 'text/plain'}
+            return Response(
+                "id:%s\napikey:%s\n" % (sensor.id, sensor.api_key),
+                status=200,
+                mimetype='text/plain'
+            )
         except NoResultFound:
             return {'message': 'User not found or not approved'}, 412
 
