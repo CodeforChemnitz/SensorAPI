@@ -91,7 +91,7 @@ class SensorsResource(ApiResource):
             try:
                 (name, value) = line.split(":", 1)
                 if name in ["email", "name"]:
-                    data[name] = value
+                    data[name] = value.strip()
             except ValueError:
                 pass
 
