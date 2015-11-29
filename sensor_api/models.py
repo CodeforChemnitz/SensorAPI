@@ -28,18 +28,20 @@ class User(db.Model):
             self.email, self.password, self.approved)
 
 
-class Sensor(db.Model):
-    __tablename__ = 'sensors'
+class SensorNode(db.Model):
+    __tablename__ = 'sensor_nodes'
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    user = relationship("User", backref=backref('sensors', order_by=id))
+    user_id = Column(Integer, ForeignKey("users.id"))
     name = Column(String(255))
     api_key = Column(String(32), default=uuid, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
+    # Relationships
+    user = relationship("User", backref=backref("sensor_nodes", order_by=id))
+
     def __repr__(self):
-        return "<Sensor(name='%s', user='%s', api_key='%s')>" % (
+        return "<SensorNode(name='%s', user='%s', api_key='%s')>" % (
             self.name, self.user, self.api_key)
 
 
@@ -60,7 +62,7 @@ class SensorValue(db.Model):
     id = Column(Integer, nullable=False, primary_key=True)
     value = Column(Float, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, primary_key=True)
-    sensor_id = Column(Integer, ForeignKey('sensors.id'), primary_key=True)
+    sensor_id = Column(Integer, ForeignKey('sensor_nodes.id'), primary_key=True)
     sensor = relationship("Sensor", backref=backref('values', order_by=created_at))
     type_id = Column(Integer, ForeignKey('sensortypes.id'), primary_key=True)
     type = relationship("SensorType")

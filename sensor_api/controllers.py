@@ -10,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
 # this module
-from sensor_api.models import User, Sensor, SensorValue, SensorType
+from sensor_api.models import User, SensorNode, SensorValue, SensorType
 
 from sensor_api import db, app
 
@@ -93,7 +93,7 @@ class SensorsResource(ApiResource):
                 filter(User.email == data.get("email")).\
                 filter(User.approved == True).\
                 one()
-            sensor = Sensor(
+            sensor = SensorNode(
                 user=user,
                 name=data.get("name")
             )
@@ -125,7 +125,7 @@ class SensorValuesResource(ApiResource):
         if "X-Sensor-Api-Key" not in request.headers:
             return {'message': 'No API key in header found'}, 401
 
-        sensor = db.session.query(Sensor).filter(Sensor.id == sensor_id).one()
+        sensor = db.session.query(SensorNode).filter(SensorNode.id == sensor_id).one()
         if sensor.api_key != request.headers["X-Sensor-Api-Key"]:
             return {'message': 'Invalid API key'}, 401
 
