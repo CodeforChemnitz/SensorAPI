@@ -6,12 +6,14 @@ from uuid import uuid4
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Float
 from sqlalchemy.orm import relationship, backref
 # this module
-from sensor_api.database import Base
+from sensor_api import db
+
 
 def uuid():
     return str(uuid4().hex)
 
-class User(Base):
+
+class User(db.Model):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
@@ -25,7 +27,8 @@ class User(Base):
         return "<User(email='%s', password='%s', approved='%s')>" % (
             self.email, self.password, self.approved)
 
-class Sensor(Base):
+
+class Sensor(db.Model):
     __tablename__ = 'sensors'
 
     id = Column(Integer, primary_key=True)
@@ -39,7 +42,8 @@ class Sensor(Base):
         return "<Sensor(name='%s', user='%s', api_key='%s')>" % (
             self.name, self.user, self.api_key)
 
-class SensorType(Base):
+
+class SensorType(db.Model):
     __tablename__ = 'sensortypes'
 
     id = Column(Integer, primary_key=True)
@@ -49,7 +53,8 @@ class SensorType(Base):
     def __repr__(self):
         return "<SensorType(name='%s')>" % (self.name)
 
-class SensorValue(Base):
+
+class SensorValue(db.Model):
     __tablename__ = 'sensorvalues'
 
     id = Column(Integer, nullable=False, primary_key=True)

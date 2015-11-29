@@ -1,0 +1,156 @@
+import json
+import os
+from functools import wraps
+from hashlib import sha256
+from uuid import uuid4
+from flask import Flask, request, Response
+from flask_restful import Resource, Api
+
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm.exc import NoResultFound
+
+# this module
+from sensor_api.models import User, Sensor, SensorValue, SensorType
+
+from sensor_api import db, app
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    db.session.remove()
+
+
+def check_api_version_header(f):
+    """
+    Checks the HTTP header for the presence of X-Sensor-Version and the value
+    "1" otherwise returns with HTTP 406 Not Acceptable
+    :param f:
+    :return:
+    """
+
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if "X-Sensor-Version" not in request.headers:
+            return Response("No version header provided", 406)
+        if request.headers["X-Sensor-Version"] != "1":
+            return Response("Wrong api version", 406)
+        return f(*args, **kwargs)
+
+    return decorated
+
+
+class ApiResource(Resource):
+    method_decorators = [check_api_version_header]
+
+
+class UsersResource(ApiResource):
+    def post(self):
+        data = request.json
+        if not data or ("email" not in data and "password" not in data):
+            return {'message': '"email" and "password" are needed'}, 422
+
+        salt = uuid4().hex
+        password_hash = sha256((salt + data["password"]).encode('utf-8'))
+        user = User(
+            email=data["email"],
+            password=salt + password_hash.hexdigest()
+        )
+        if os.environ.get('CI') != None:
+            user.approval_code = 'testing_approval_code'
+
+        db.session.add(user)
+        try:
+            db.session.commit()
+        except IntegrityError:
+            return {'message': 'email address already in use'}, 409
+
+        return {'id': user.id, 'email': user.email, 'created_at': str(user.created_at)}
+
+
+class UserConfimResource(Resource):
+    def get(self, id, approval_code):
+        try:
+            user = db.session.query(User).\
+                filter(User.id == id).\
+                filter(User.approval_code == approval_code).\
+                one()
+            user.approval_code = None
+            user.approved = True
+
+            db.session.commit()
+
+            return {'message': 'User email confirmed'}
+        except NoResultFound:
+            return {'message': 'User not found'}, 400
+
+
+class SensorsResource(ApiResource):
+    def post(self):
+        data = request.data.decode("utf-8")
+        data = json.loads(data)
+
+        try:
+            user = db.session.query(User).\
+                filter(User.email == data.get("email")).\
+                filter(User.approved == True).\
+                one()
+            sensor = Sensor(
+                user=user,
+                name=data.get("name")
+            )
+            if os.environ.get('CI') != None:
+                sensor.api_key = 'testing_api_key'
+
+            db.session.add(sensor)
+            try:
+                db.session.commit()
+            except ValueError:
+                return {'message': 'Sensor name is invalid'}, 400
+
+            sensor_info = {
+                "id": sensor.id,
+                "apikey": sensor.api_key
+            }
+
+            return Response(
+                json.dumps(sensor_info),
+                status=200,
+                mimetype="application/json"
+            )
+        except NoResultFound:
+            return {'message': 'User not found or not approved'}, 412
+
+
+class SensorValuesResource(ApiResource):
+    def post(self, sensor_id):
+        if "X-Sensor-Api-Key" not in request.headers:
+            return {'message': 'No API key in header found'}, 401
+
+        sensor = db.session.query(Sensor).filter(Sensor.id == sensor_id).one()
+        if sensor.api_key != request.headers["X-Sensor-Api-Key"]:
+            return {'message': 'Invalid API key'}, 401
+
+        valid_type_ids = [t[0] for t in db.session.query(SensorType.id).all()]
+
+        bad = []
+        for line in request.data.decode("utf-8").split("\n"):
+            try:
+                (id, type, value) = line.split(",")
+                if int(type) not in valid_type_ids:
+                    bad.append(line + " invalid sensor type")
+                    continue
+
+                value = SensorValue(
+                    sensor=sensor,
+                    id=int(id),
+                    type_id=int(type),
+                    value=float(value)
+                )
+                db.session.add(value)
+                db.session.commit()
+            except ValueError:
+                bad.append(line + " invalid format: id(int),type(int),value(float) required")
+
+        if len(bad) > 0:
+            return {'message': 'Bad CSV lines', 'lines': bad}, 400
+
+        return {}
