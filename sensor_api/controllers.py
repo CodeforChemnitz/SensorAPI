@@ -108,7 +108,7 @@ class SensorsResource(ApiResource):
 
             sensor_info = {
                 "id": sensor.id,
-                "apikey": sensor.api_key
+                "apikey": sensor.api_key.hex
             }
 
             return Response(

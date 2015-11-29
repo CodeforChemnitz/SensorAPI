@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
-from uuid import uuid4
+import uuid
 
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Float
 from sqlalchemy.orm import relationship, backref
+
 # this module
 from sensor_api import db
-
-
-def uuid():
-    return str(uuid4().hex)
+from sensor_api.helper.db_types import GUID
 
 
 class User(db.Model):
@@ -34,7 +32,7 @@ class SensorNode(db.Model):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     name = Column(String(255))
-    api_key = Column(String(32), default=uuid, nullable=False)
+    api_key = Column(GUID, default=lambda : uuid.uuid4(), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationships
@@ -63,7 +61,7 @@ class SensorValue(db.Model):
     value = Column(Float, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, primary_key=True)
     sensor_id = Column(Integer, ForeignKey('sensor_nodes.id'), primary_key=True)
-    sensor = relationship("Sensor", backref=backref('values', order_by=created_at))
+    sensor = relationship("SensorNode", backref=backref('values', order_by=created_at))
     type_id = Column(Integer, ForeignKey('sensortypes.id'), primary_key=True)
     type = relationship("SensorType")
 
