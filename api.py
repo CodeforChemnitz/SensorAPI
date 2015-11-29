@@ -4,6 +4,7 @@
 from functools import wraps
 from uuid import uuid4
 from hashlib import sha256
+import json
 import os
 
 from flask import Flask, request, Response
@@ -86,14 +87,8 @@ class UserConfimResource(Resource):
 
 class SensorsResource(ApiResource):
     def post(self):
-        data = {}
-        for line in request.data.decode("utf-8").split("\n"):
-            try:
-                (name, value) = line.split(":", 1)
-                if name in ["email", "name"]:
-                    data[name] = value.strip()
-            except ValueError:
-                pass
+        data = request.data.decode("utf-8")
+        data = json.loads(data)
 
         try:
             user = db_session.query(User).\
@@ -113,10 +108,15 @@ class SensorsResource(ApiResource):
             except ValueError:
                 return {'message': 'Sensor name is invalid'}, 400
 
+            sensor_info = {
+                "id": sensor.id,
+                "apikey": sensor.api_key
+            }
+
             return Response(
-                "id:%s\napikey:%s\n" % (sensor.id, sensor.api_key),
+                json.dumps(sensor_info),
                 status=200,
-                mimetype='text/plain'
+                mimetype="application/json"
             )
         except NoResultFound:
             return {'message': 'User not found or not approved'}, 412
