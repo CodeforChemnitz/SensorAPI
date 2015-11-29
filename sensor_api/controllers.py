@@ -107,8 +107,8 @@ class SensorsResource(ApiResource):
                 return {'message': 'Sensor name is invalid'}, 400
 
             sensor_info = {
-                "id": sensor.id,
-                "apikey": sensor.api_key.hex
+                "id": sensor.api_id.hex,
+                "key": sensor.api_key.hex
             }
 
             return Response(

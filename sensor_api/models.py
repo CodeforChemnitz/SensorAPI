@@ -32,7 +32,8 @@ class SensorNode(db.Model):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     name = Column(String(255))
-    api_key = Column(GUID, default=lambda : uuid.uuid4(), nullable=False)
+    api_id = Column(GUID, default=lambda: uuid.uuid4(), nullable=False, unique=True)
+    api_key = Column(GUID, default=lambda: uuid.uuid4(), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationships
