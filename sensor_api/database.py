@@ -3,8 +3,8 @@
 # copy of the SQLAlchemy tutorial
 # http://flask.pocoo.org/docs/0.10/patterns/sqlalchemy/
 from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
 
 engine = create_engine('sqlite:////tmp/sensor-data.db', echo=False, convert_unicode=True)
@@ -18,7 +18,7 @@ def init_db():
     # import all modules here that might define models so that
     # they will be registered properly on the metadata.  Otherwise
     # you will have to import them first before calling init_db()
-    import models
+    from sensor_api import models
     Base.metadata.create_all(bind=engine)
 
     for name in ['temperature', 'pressure']:

@@ -1,4 +1,4 @@
 import sys
 sys.path.insert(0, '/srv/chemnitz-sensorapi')
 
-from api import app as application
+from sensor_api import app as application

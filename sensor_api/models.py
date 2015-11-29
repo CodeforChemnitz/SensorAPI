@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Float
-from sqlalchemy.orm import relationship, backref
 from uuid import uuid4
 
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Float
+from sqlalchemy.orm import relationship, backref
 # this module
-from database import Base
+from sensor_api.database import Base
 
 def uuid():
     return str(uuid4().hex)
