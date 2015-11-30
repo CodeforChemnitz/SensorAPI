@@ -60,10 +60,12 @@ address needs to be an already registered one. The parameter `name` is optional.
     HTTP/1.1
     Host: data.example.org
     X-Sensor-Version: 1
-    Content-Type: text/plain
+    Content-Type: application/json
 
-    email:test@example.org
-    name:My new sensor
+    {
+        "email":"test@example.org",
+        "name":"My new sensor"
+    }
 
 You then get following response on success:
 
