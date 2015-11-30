@@ -10,6 +10,11 @@ to `/tmp/sensor-data.db`.
 
     pip install -r requirements.txt
 
+## Database
+
+    python manage.py db revision --autogenerate
+    python manage.py db upgrade
+
 ## Run
 
     python api.py
