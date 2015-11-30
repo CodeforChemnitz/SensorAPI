@@ -17,14 +17,14 @@ to `/tmp/sensor-data.db`.
 
 ## Run
 
-    python api.py
+    python manage.py runserver
 
 ## Tests
 
 To run the tests:
 
     pip install -r requirements-test.txt
-    CI=true python api.py # this allows to use a predefined api key
+    CI=true python manage.py runserver # this allows to use a predefined api key
     cd tests
     python run.py
 
