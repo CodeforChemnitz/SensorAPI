@@ -10,7 +10,9 @@ install:
   - pip install -r requirements.txt
   - pip install -r requirements-test.txt
 before_script:
-  - python api.py &
+  - python manage.py db revision --autogenerate
+  - python manage.py db upgrade
+  - python manage.py runserver &
   - sleep 5 # give server time to start
 script:
   - cd tests
