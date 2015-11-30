@@ -3,7 +3,7 @@
 from datetime import datetime
 import uuid
 
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Float
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Float, SmallInteger
 from sqlalchemy.orm import relationship, backref
 
 # this module
@@ -44,27 +44,33 @@ class SensorNode(db.Model):
             self.name, self.user, self.api_key)
 
 
-class SensorType(db.Model):
-    __tablename__ = 'sensortypes'
+class SensorReading(db.Model):
+    __tablename__ = 'sensor_readings'
 
     id = Column(Integer, primary_key=True)
-    name= Column(String(255), unique=True, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-    def __repr__(self):
-        return "<SensorType(name='%s')>" % (self.name)
-
-
-class SensorValue(db.Model):
-    __tablename__ = 'sensorvalues'
-
-    id = Column(Integer, nullable=False, primary_key=True)
+    collection_id = Column(Integer, ForeignKey('sensor_reading_collections.id'))
+    sensor_index = Column(SmallInteger, nullable=False)
+    sensor_type = Column(SmallInteger, nullable=False)
+    value_type = Column(SmallInteger, nullable=False)
     value = Column(Float, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow, primary_key=True)
-    sensor_id = Column(Integer, ForeignKey('sensor_nodes.id'), primary_key=True)
-    sensor = relationship("SensorNode", backref=backref('values', order_by=created_at))
-    type_id = Column(Integer, ForeignKey('sensortypes.id'), primary_key=True)
-    type = relationship("SensorType")
+
+    # Relationships
+    #type = relationship("SensorType")
 
     def __repr__(self):
-        return "<SensorValue(sensor='%s', type='%s', value='%f')>" % (self.sensor, self.type.name, self.value)
+        return "<SensorReading(sensor='%s', type='%s', value='%f')>" % (self.sensor, self.type.name, self.value)
+
+
+class SensorReadingCollection(db.Model):
+    __tablename__ = 'sensor_reading_collections'
+
+    id = Column(Integer, primary_key=True)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+    sensor_node_id = Column(Integer, ForeignKey('sensor_nodes.id'))
+
+    # Relationships
+    sensor_node = relationship("SensorNode", backref=backref("reading_collections"))
+    readings = relationship("SensorReading", backref=backref("collection"))
+
+    def __repr__(self):
+        return "<SensorReadingCollection(sensor='%s', type='%s', value='%f')>" % (self.sensor, self.type.name, self.value)
