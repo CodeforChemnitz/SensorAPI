@@ -10,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
 # this module
-from sensor_api.models import User, SensorNode, SensorValue, SensorType
+from sensor_api.models import User, SensorNode, SensorReading, SensorReadingCollection
 
 from sensor_api import db, app
 
@@ -125,32 +125,27 @@ class SensorValuesResource(ApiResource):
         if "X-Sensor-Api-Key" not in request.headers:
             return {'message': 'No API key in header found'}, 401
 
-        sensor = db.session.query(SensorNode).filter(SensorNode.id == sensor_id).one()
-        if sensor.api_key != request.headers["X-Sensor-Api-Key"]:
+        sensor_node = db.session.query(SensorNode).filter(SensorNode.api_id == sensor_id).one()
+        if sensor_node.api_key.hex != request.headers["X-Sensor-Api-Key"]:
             return {'message': 'Invalid API key'}, 401
 
-        valid_type_ids = [t[0] for t in db.session.query(SensorType.id).all()]
+        data = request.data.decode("utf-8")
+        data = json.loads(data)
 
-        bad = []
-        for line in request.data.decode("utf-8").split("\n"):
-            try:
-                (id, type, value) = line.split(",")
-                if int(type) not in valid_type_ids:
-                    bad.append(line + " invalid sensor type")
-                    continue
+        collection = SensorReadingCollection(sensor_node=sensor_node)
+        db.session.add(collection)
+        for reading in data:
+            idx, sensor_type, value_type, value = reading
 
-                value = SensorValue(
-                    sensor=sensor,
-                    id=int(id),
-                    type_id=int(type),
-                    value=float(value)
-                )
-                db.session.add(value)
-                db.session.commit()
-            except ValueError:
-                bad.append(line + " invalid format: id(int),type(int),value(float) required")
+            sensor_reading = SensorReading(
+                sensor_index=idx,
+                sensor_type=sensor_type,
+                value_type=value_type,
+                value=value,
+                collection=collection
+            )
+            db.session.add(sensor_reading)
 
-        if len(bad) > 0:
-            return {'message': 'Bad CSV lines', 'lines': bad}, 400
+        db.session.commit()
 
         return {}
