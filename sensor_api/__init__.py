@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 
-from flask import Flask, request, Response
+from flask import Flask
 from flask_migrate import Migrate, MigrateCommand
-from flask_restful import Resource, Api
+from flask_restful import Api
 from flask_script import Manager
 from flask_sqlalchemy import SQLAlchemy
 

@@ -3,8 +3,8 @@ import os
 from functools import wraps
 from hashlib import sha256
 from uuid import uuid4
-from flask import Flask, request, Response
-from flask_restful import Resource, Api
+from flask import request, Response
+from flask_restful import Resource
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
