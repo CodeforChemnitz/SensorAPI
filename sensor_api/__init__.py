@@ -3,10 +3,10 @@
 
 
 from flask import Flask, request, Response
+from flask_migrate import Migrate, MigrateCommand
 from flask_restful import Resource, Api
-from flask.ext.migrate import Migrate, MigrateCommand
-from flask.ext.script import Manager
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_script import Manager
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object("sensor_api.default_settings")
