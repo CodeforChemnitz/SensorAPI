@@ -13,8 +13,6 @@ db = SQLAlchemy(app)
 manager = Manager(app)
 
 def run():
-    #db.init_db()
-    #app.run(host='0.0.0.0', threaded=True)
     # Setup migration
     Migrate(app, db)
     manager.add_command("db", MigrateCommand)
