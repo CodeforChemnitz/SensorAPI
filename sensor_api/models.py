@@ -12,7 +12,7 @@ from sensor_api.helper.db_types import GUID
 
 
 class User(db.Model):
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
     email = Column(String(255), unique=True, nullable=False)
@@ -27,7 +27,7 @@ class User(db.Model):
 
 
 class SensorNode(db.Model):
-    __tablename__ = 'sensor_nodes'
+    __tablename__ = "sensor_nodes"
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"))
@@ -45,10 +45,10 @@ class SensorNode(db.Model):
 
 
 class SensorReading(db.Model):
-    __tablename__ = 'sensor_readings'
+    __tablename__ = "sensor_readings"
 
     id = Column(Integer, primary_key=True)
-    collection_id = Column(Integer, ForeignKey('sensor_reading_collections.id'))
+    collection_id = Column(Integer, ForeignKey("sensor_reading_collections.id"))
     sensor_index = Column(SmallInteger, nullable=False)
     sensor_type = Column(SmallInteger, nullable=False)
     value_type = Column(SmallInteger, nullable=False)
@@ -62,11 +62,11 @@ class SensorReading(db.Model):
 
 
 class SensorReadingCollection(db.Model):
-    __tablename__ = 'sensor_reading_collections'
+    __tablename__ = "sensor_reading_collections"
 
     id = Column(Integer, primary_key=True)
     timestamp = Column(DateTime, default=datetime.utcnow)
-    sensor_node_id = Column(Integer, ForeignKey('sensor_nodes.id'))
+    sensor_node_id = Column(Integer, ForeignKey("sensor_nodes.id"))
 
     # Relationships
     sensor_node = relationship("SensorNode", backref=backref("reading_collections"))

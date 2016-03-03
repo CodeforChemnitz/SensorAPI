@@ -19,10 +19,10 @@ api = Api(app)
 
 from sensor_api.controllers import UsersResource, UserConfimResource, SensorsResource, SensorValuesResource
 
-api.add_resource(UsersResource, '/users')
-api.add_resource(UserConfimResource, '/users/<int:id>/<approval_code>')
-api.add_resource(SensorsResource, '/sensors')
-api.add_resource(SensorValuesResource, '/sensors/<sensor_id>')
+api.add_resource(UsersResource, "/users")
+api.add_resource(UserConfimResource, "/users/<int:id>/<approval_code>")
+api.add_resource(SensorsResource, "/sensors")
+api.add_resource(SensorValuesResource, "/sensors/<sensor_id>")
 
 def run():
     #db.init_db()

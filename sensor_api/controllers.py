@@ -46,24 +46,24 @@ class UsersResource(ApiResource):
     def post(self):
         data = request.json
         if not data or ("email" not in data and "password" not in data):
-            return {'message': '"email" and "password" are needed'}, 422
+            return {"message": '"email" and "password" are needed'}, 422
 
         salt = uuid4().hex
-        password_hash = sha256((salt + data["password"]).encode('utf-8'))
+        password_hash = sha256((salt + data["password"]).encode("utf-8"))
         user = User(
             email=data["email"],
             password=salt + password_hash.hexdigest()
         )
-        if os.environ.get('CI') != None:
-            user.approval_code = 'testing_approval_code'
+        if os.environ.get("CI") != None:
+            user.approval_code = "testing_approval_code"
 
         db.session.add(user)
         try:
             db.session.commit()
         except IntegrityError:
-            return {'message': 'email address already in use'}, 409
+            return {"message": "email address already in use"}, 409
 
-        return {'id': user.id, 'email': user.email, 'created_at': str(user.created_at)}
+        return {"id": user.id, "email": user.email, "created_at": str(user.created_at)}
 
 
 class UserConfimResource(Resource):
@@ -78,9 +78,9 @@ class UserConfimResource(Resource):
 
             db.session.commit()
 
-            return {'message': 'User email confirmed'}
+            return {"message": "User email confirmed"}
         except NoResultFound:
-            return {'message': 'User not found'}, 400
+            return {"message": "User not found"}, 400
 
 
 class SensorsResource(ApiResource):
@@ -97,14 +97,14 @@ class SensorsResource(ApiResource):
                 user=user,
                 name=data.get("name")
             )
-            if os.environ.get('CI') != None:
-                sensor.api_key = 'testing_api_key'
+            if os.environ.get("CI") != None:
+                sensor.api_key = "testing_api_key"
 
             db.session.add(sensor)
             try:
                 db.session.commit()
             except ValueError:
-                return {'message': 'Sensor name is invalid'}, 400
+                return {"message": "Sensor name is invalid"}, 400
 
             sensor_info = {
                 "id": sensor.api_id.hex,
@@ -117,17 +117,17 @@ class SensorsResource(ApiResource):
                 mimetype="application/json"
             )
         except NoResultFound:
-            return {'message': 'User not found or not approved'}, 412
+            return {"message": "User not found or not approved"}, 412
 
 
 class SensorValuesResource(ApiResource):
     def post(self, sensor_id):
         if "X-Sensor-Api-Key" not in request.headers:
-            return {'message': 'No API key in header found'}, 401
+            return {"message": "No API key in header found"}, 401
 
         sensor_node = db.session.query(SensorNode).filter(SensorNode.api_id == sensor_id).one()
         if sensor_node.api_key.hex != request.headers["X-Sensor-Api-Key"]:
-            return {'message': 'Invalid API key'}, 401
+            return {"message": "Invalid API key"}, 401
 
         data = request.data.decode("utf-8")
         data = json.loads(data)
