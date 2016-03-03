@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
-from flask import Blueprint, Flask
+from flask import Flask
 from flask_migrate import Migrate, MigrateCommand
-from flask_restful import Api
 from flask_script import Manager
 from flask_sqlalchemy import SQLAlchemy
 
@@ -16,19 +14,9 @@ migrate = Migrate(app, db)
 manager = Manager(app)
 manager.add_command("db", MigrateCommand)
 
-api_bp = Blueprint("api", __name__)
-api = Api(api_bp)
-
-from sensor_api.controllers import UsersResource, UserConfimResource, SensorsResource, SensorValuesResource
-
-api.add_resource(UsersResource, "/users")
-api.add_resource(UserConfimResource, "/users/<int:id>/<approval_code>")
-api.add_resource(SensorsResource, "/sensors")
-api.add_resource(SensorValuesResource, "/sensors/<sensor_id>")
-app.register_blueprint(api_bp)
-
-
 def run():
     #db.init_db()
     #app.run(host='0.0.0.0', threaded=True)
+    from .api import api_bp
+    app.register_blueprint(api_bp)
     manager.run()
