@@ -21,9 +21,31 @@ class User(db.Model):
     approval_code = Column(String(32), default=uuid)
     created_at = Column(DateTime, default=datetime.utcnow)
 
+    def __init__(self, email=None, password=None):
+        self.email = email
+        self.password = password
+
     def __repr__(self):
         return "<User(email='%s', password='%s', approved='%s')>" % (
             self.email, self.password, self.approved)
+
+    def get_id(self):
+        try:
+            return unicode(self.id)  # python 2
+        except NameError:
+            return str(self.id)  # python 3
+
+    @property
+    def is_active(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
+
+    @property
+    def is_authenticated(self):
+        return True
 
 
 class SensorNode(db.Model):
