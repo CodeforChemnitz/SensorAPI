@@ -67,6 +67,20 @@ class SensorNode(db.Model):
             self.name, self.user, self.api_key)
 
 
+class SensorReadingType(db.Model):
+    __tablename__ = "sensor_reading_types"
+
+    id = Column(Integer, primary_key=True)
+    sensor_node_id = Column(Integer, ForeignKey("sensor_nodes.id"), index=True)
+    sensor_index = Column(SmallInteger, nullable=False)
+    sensor_type = Column(SmallInteger, nullable=False)
+    value_type = Column(SmallInteger, nullable=False)
+    last_seen_at = Column(DateTime)
+
+    # Relationships
+    sensor_node = relationship("SensorNode", backref=backref("reading_types"))
+
+
 class SensorReading(db.Model):
     __tablename__ = "sensor_readings"
 
