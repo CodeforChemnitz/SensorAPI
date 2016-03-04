@@ -1,0 +1,3 @@
+-r common.txt
+-r api.txt
+-r web.txt

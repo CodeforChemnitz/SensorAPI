@@ -1,2 +1,1 @@
-CommonMark==0.5.4
-requests==2.7.0
+-r requirements/test.txt
