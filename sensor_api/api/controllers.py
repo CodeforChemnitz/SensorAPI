@@ -11,7 +11,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
 # this module
-from sensor_api.models import User, SensorNode, SensorReading, SensorReadingCollection
+from sensor_api.models import User, SensorNode, SensorReading, SensorReadingType, SensorReadingCollection
 
 from sensor_api import db, app
 
@@ -130,10 +130,33 @@ class SensorValuesResource(ApiResource):
         if sensor_node.api_key.hex != request.headers["X-Sensor-Api-Key"]:
             return {"message": "Invalid API key"}, 401
 
-        sensor_node.last_seen_at = datetime.utcnow()
+        utc_now = datetime.utcnow()
+        sensor_node.last_seen_at = utc_now
 
         data = request.data.decode("utf-8")
         data = json.loads(data)
+
+        reading_types = sensor_node.reading_types
+        for reading in data:
+            idx, sensor_type, value_type, value = reading
+            found = False
+            for reading_type in reading_types:
+                if reading_type.sensor_index == idx and \
+                        reading_type.sensor_type == sensor_type and \
+                        reading_type.value_type == value_type:
+                    reading_type.last_seen_at = utc_now
+                    found = True
+                    break
+
+            if not found:
+                reading_type = SensorReadingType(
+                    sensor_node=sensor_node,
+                    sensor_index=idx,
+                    sensor_type=sensor_type,
+                    value_type=value_type,
+                    last_seen_at=utc_now
+                )
+                db.session.add(reading_type)
 
         collection = SensorReadingCollection(sensor_node=sensor_node)
         db.session.add(collection)
