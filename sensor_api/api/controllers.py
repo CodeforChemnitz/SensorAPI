@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 from functools import wraps
 from hashlib import sha256
 from uuid import uuid4
@@ -128,6 +129,8 @@ class SensorValuesResource(ApiResource):
         sensor_node = db.session.query(SensorNode).filter(SensorNode.api_id == sensor_id).one()
         if sensor_node.api_key.hex != request.headers["X-Sensor-Api-Key"]:
             return {"message": "Invalid API key"}, 401
+
+        sensor_node.last_seen_at = datetime.utcnow()
 
         data = request.data.decode("utf-8")
         data = json.loads(data)
