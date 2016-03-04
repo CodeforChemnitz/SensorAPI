@@ -57,6 +57,7 @@ class SensorNode(db.Model):
     api_id = Column(GUID, default=lambda: uuid.uuid4(), nullable=False, unique=True)
     api_key = Column(GUID, default=lambda: uuid.uuid4(), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+    last_seen_at = Column(DateTime)
 
     # Relationships
     user = relationship("User", backref=backref("sensor_nodes", order_by=id))
