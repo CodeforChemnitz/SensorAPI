@@ -33,4 +33,11 @@ def run():
     from .admin.controllers import web_bp
     app.register_blueprint(web_bp, url_prefix="/admin")
 
+    # Debug Toolbar
+    try:
+        from flask_debugtoolbar import DebugToolbarExtension
+        DebugToolbarExtension(app)
+    except ImportError:
+        pass
+
     manager.run()
