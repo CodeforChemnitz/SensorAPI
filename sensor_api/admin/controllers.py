@@ -14,6 +14,21 @@ def index():
         "admin/index.html"
     )
 
+
+@web_bp.route("/nodes/<int:node_id>", methods=["GET"])
+@login_required
+def node_details(node_id):
+    user = flask_login.current_user
+    node = models.SensorNode.query.filter_by(id=node_id, user=user).first()
+    if not node:
+        flask.abort(404)
+
+    return render_template(
+        "admin/nodes/details.html",
+        sensor_node=node
+    )
+
+
 @web_bp.route("/nodes", methods=["GET"])
 @login_required
 def nodes():

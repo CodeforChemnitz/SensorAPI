@@ -14,7 +14,7 @@
             <tbody>
             {% for node in sensor_nodes %}
                 <tr>
-                    <td>{{ node.name }}</td>
+                    <td><a href="{{ url_for('admin.node_details', node_id=node.id) }}">{{ node.name }}</a></td>
                     <td>{{ node.reading_types|length }}</td>
                     <td>{{ node.last_seen_at }}</td>
                     <td class=""><a href=""><i class="fa fa-pencil"></i></a> <a href=""><i style="color: red" class="fa fa-trash"></i></a></td>

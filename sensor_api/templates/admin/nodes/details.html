@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2>Readings</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Sensor ID</th>
+                    <th>Sensor Type</th>
+                    <th>Value Type</th>
+                    <th>Last seen</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for reading_type in sensor_node.reading_types %}
+                <tr>
+                    <td>{{ reading_type.sensor_index }}</td>
+                    <td>{{ reading_type.sensor_type }}</td>
+                    <td>{{ reading_type.value_type }}</td>
+                    <td>{{ reading_type.last_seen_at }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock%}
