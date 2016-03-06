@@ -3,7 +3,7 @@
 from datetime import datetime
 import uuid
 
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Float, SmallInteger
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Float, SmallInteger, Numeric
 from sqlalchemy.orm import relationship, backref
 
 # this module
@@ -56,6 +56,8 @@ class SensorNode(db.Model):
     name = Column(String(255))
     api_id = Column(GUID, default=lambda: uuid.uuid4(), nullable=False, unique=True)
     api_key = Column(GUID, default=lambda: uuid.uuid4(), nullable=False)
+    geo_latitude = Column(Numeric(9, 6))
+    geo_longitude = Column(Numeric(9, 6))
     created_at = Column(DateTime, default=datetime.utcnow)
     last_seen_at = Column(DateTime)
 
