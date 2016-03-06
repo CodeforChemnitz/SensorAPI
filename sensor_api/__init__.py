@@ -33,6 +33,9 @@ def run():
     from .admin.controllers import admin_bp
     app.register_blueprint(admin_bp, url_prefix="/admin")
 
+    from .web.controllers import web_bp
+    app.register_blueprint(web_bp)
+
     # Debug Toolbar
     try:
         from flask_debugtoolbar import DebugToolbarExtension
