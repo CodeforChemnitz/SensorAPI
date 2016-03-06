@@ -17,11 +17,15 @@
                     <td><a href="{{ url_for('admin.node_details', node_id=node.id) }}">{{ node.name }}</a></td>
                     <td>{{ node.reading_types|length }}</td>
                     <td>{{ node.last_seen_at }}</td>
-                    <td class=""><a href=""><i class="fa fa-pencil"></i></a> <a href=""><i style="color: red" class="fa fa-trash"></i></a></td>
+                    <td class="">
+                        <a href="#" data-save-url="{{ url_for('admin.node_location', node_id=node.id) }}" data-toggle="modal" data-target="#myModal"><i class="fa fa-map-marker"></i></a>
+                        <a href=""><i class="fa fa-pencil"></i></a>
+                        <a href=""><i style="color: red" class="fa fa-trash"></i></a></td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
     </div>
 </div>
+{% include('admin/map.html') %}
 {% endblock%}

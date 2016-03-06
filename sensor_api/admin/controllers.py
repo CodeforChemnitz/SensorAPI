@@ -29,6 +29,22 @@ def node_details(node_id):
     )
 
 
+@web_bp.route("/nodes/<int:node_id>/location", methods=["GET", "POST"])
+@login_required
+def node_location(node_id):
+    user = flask_login.current_user
+    node = models.SensorNode.query.filter_by(id=node_id, user=user).first()
+    if not node:
+        flask.abort(404)
+
+    # ToDo: Checks
+    node.geo_latitude = request.form.get("latitude")
+    node.geo_longitude = request.form.get("longitude")
+    db.session.commit()
+
+    return "OK"
+
+
 @web_bp.route("/nodes", methods=["GET"])
 @login_required
 def nodes():
