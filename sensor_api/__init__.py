@@ -30,8 +30,8 @@ def run():
     from .api import api_bp
     app.register_blueprint(api_bp)
 
-    from .admin.controllers import web_bp
-    app.register_blueprint(web_bp, url_prefix="/admin")
+    from .admin.controllers import admin_bp
+    app.register_blueprint(admin_bp, url_prefix="/admin")
 
     # Debug Toolbar
     try:

@@ -6,16 +6,16 @@ from flask_login import login_user, login_required, logout_user
 from . import forms
 from sensor_api import models, db
 
-web_bp = Blueprint("admin", __name__)
+admin_bp = Blueprint("admin", __name__)
 
-@web_bp.route("/", methods=["GET", "POST"])
+@admin_bp.route("/", methods=["GET", "POST"])
 def index():
     return render_template(
         "admin/index.html"
     )
 
 
-@web_bp.route("/nodes/<int:node_id>", methods=["GET"])
+@admin_bp.route("/nodes/<int:node_id>", methods=["GET"])
 @login_required
 def node_details(node_id):
     user = flask_login.current_user
@@ -29,7 +29,7 @@ def node_details(node_id):
     )
 
 
-@web_bp.route("/nodes/<int:node_id>/location", methods=["GET", "POST"])
+@admin_bp.route("/nodes/<int:node_id>/location", methods=["GET", "POST"])
 @login_required
 def node_location(node_id):
     user = flask_login.current_user
@@ -45,7 +45,7 @@ def node_location(node_id):
     return "OK"
 
 
-@web_bp.route("/nodes", methods=["GET"])
+@admin_bp.route("/nodes", methods=["GET"])
 @login_required
 def nodes():
     user = flask_login.current_user
@@ -54,7 +54,7 @@ def nodes():
         sensor_nodes=user.sensor_nodes
     )
 
-@web_bp.route("/login", methods=["GET", "POST"])
+@admin_bp.route("/login", methods=["GET", "POST"])
 def login():
     form = forms.LoginForm(request.form)
     if form.validate_on_submit():
@@ -76,13 +76,13 @@ def login():
         form=form
     )
 
-@web_bp.route("/logout", methods=["GET", "POST"])
+@admin_bp.route("/logout", methods=["GET", "POST"])
 @login_required
 def logout():
     logout_user()
     return redirect(url_for("admin.index"))
 
-@web_bp.route("/register", methods=["GET", "POST"])
+@admin_bp.route("/register", methods=["GET", "POST"])
 def register():
     form = forms.RegisterForm(request.form)
     if form.validate_on_submit():
