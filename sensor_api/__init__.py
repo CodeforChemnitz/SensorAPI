@@ -28,7 +28,7 @@ def run():
 
     # Load blueprints
     from .api import api_bp
-    app.register_blueprint(api_bp)
+    app.register_blueprint(api_bp, url_prefix="/api")
 
     from .admin.controllers import admin_bp
     app.register_blueprint(admin_bp, url_prefix="/admin")
