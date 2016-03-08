@@ -86,6 +86,22 @@ class UserConfimResource(ApiResource):
 
 
 class SensorNodes(ApiResource):
+    def get(self):
+        nodes = []
+        for node in models.SensorNode.query.all():
+            node_data = {
+                "id": node.api_id.hex
+            }
+
+            if node.geo_latitude and node.geo_longitude:
+                # ToDo: encode Decimal()
+                # ToDo: use fields
+                node_data["geo_lat"] = float(node.geo_latitude)
+                node_data["geo_lng"] = float(node.geo_longitude)
+
+            nodes.append(node_data)
+        return nodes
+
     def post(self):
         data = request.data.decode("utf-8")
         data = json.loads(data)
