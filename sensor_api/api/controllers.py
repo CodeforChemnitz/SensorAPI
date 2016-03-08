@@ -1,6 +1,7 @@
 import json
 import os
 from datetime import datetime
+from functools import wraps
 from hashlib import sha256
 from uuid import uuid4
 from flask import request, Response
@@ -12,14 +13,38 @@ from sqlalchemy.orm.exc import NoResultFound
 # this module
 from sensor_api.models import User, SensorNode, SensorReading, SensorReadingType, SensorReadingCollection
 
-from sensor_api import db, app
+from sensor_api import db, app, models
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     db.session.remove()
 
 
-class UsersResource(Resource):
+def jsonp_wrapper(func):
+    """
+    Wraps JSONified output for JSONP requests.
+
+    :param func: Wrapped function
+    """
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        callback = request.args.get('callback', False)
+        if callback:
+            data = func(*args, **kwargs)
+            data = json.dumps(data, indent=1)
+            content = str(callback) + "(" + data + ")"
+            mimetype = "application/javascript"
+            return app.response_class(content, mimetype=mimetype)
+        else:
+            return func(*args, **kwargs)
+    return decorated_function
+
+
+class ApiResource(Resource):
+    method_decorators = [jsonp_wrapper]
+
+
+class UsersResource(ApiResource):
     def post(self):
         data = request.json
         if not data or ("email" not in data and "password" not in data):
@@ -43,7 +68,7 @@ class UsersResource(Resource):
         return {"id": user.id, "email": user.email, "created_at": str(user.created_at)}
 
 
-class UserConfimResource(Resource):
+class UserConfimResource(ApiResource):
     def get(self, id, approval_code):
         try:
             user = db.session.query(User).\
@@ -60,7 +85,7 @@ class UserConfimResource(Resource):
             return {"message": "User not found"}, 400
 
 
-class SensorNodes(Resource):
+class SensorNodes(ApiResource):
     def post(self):
         data = request.data.decode("utf-8")
         data = json.loads(data)
@@ -97,7 +122,7 @@ class SensorNodes(Resource):
             return {"message": "User not found or not approved"}, 412
 
 
-class SensorNodeMetrics(Resource):
+class SensorNodeMetrics(ApiResource):
     def post(self, node_id):
         if "X-Sensor-Api-Key" not in request.headers:
             return {"message": "No API key in header found"}, 401
