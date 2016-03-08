@@ -24,7 +24,10 @@
 
         map.addLayer(markers);
 
-        $.getJSON("{{ url_for('web.locations') }}", function (data) {
+        $.ajax({
+          dataType: "jsonp",
+          url: "/api/v1/nodes"
+        }).done(function (data) {
             $.each(data, function (key, val) {
                 console.log(val);
                 var marker = L.marker(new L.LatLng(val['geo_lat'], val['geo_lng']), {node_id:key});
