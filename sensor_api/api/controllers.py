@@ -84,7 +84,7 @@ class UserConfimResource(Resource):
             return {"message": "User not found"}, 400
 
 
-class SensorsResource(ApiResource):
+class SensorNodes(ApiResource):
     def post(self):
         data = request.data.decode("utf-8")
         data = json.loads(data)
@@ -121,12 +121,12 @@ class SensorsResource(ApiResource):
             return {"message": "User not found or not approved"}, 412
 
 
-class SensorValuesResource(ApiResource):
-    def post(self, sensor_id):
+class SensorNodeMetrics(ApiResource):
+    def post(self, node_id):
         if "X-Sensor-Api-Key" not in request.headers:
             return {"message": "No API key in header found"}, 401
 
-        sensor_node = db.session.query(SensorNode).filter(SensorNode.api_id == sensor_id).one()
+        sensor_node = db.session.query(SensorNode).filter(SensorNode.api_id == node_id).one()
         if sensor_node.api_key.hex != request.headers["X-Sensor-Api-Key"]:
             return {"message": "Invalid API key"}, 401
 
