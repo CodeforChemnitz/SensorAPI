@@ -30,7 +30,7 @@
         }).done(function (data) {
             $.each(data, function (key, val) {
                 console.log(val);
-                var marker = L.marker(new L.LatLng(val['geo_lat'], val['geo_lng']), {node_id:key});
+                var marker = L.marker(new L.LatLng(val['geo_lat'], val['geo_lng']), {node_id:val['id']});
                 markers.addLayer(marker);
             });
             /*
