@@ -1,7 +1,6 @@
 import json
 import os
 from datetime import datetime
-from functools import wraps
 from hashlib import sha256
 from uuid import uuid4
 from flask import request, Response
@@ -20,30 +19,7 @@ def shutdown_session(exception=None):
     db.session.remove()
 
 
-def check_api_version_header(f):
-    """
-    Checks the HTTP header for the presence of X-Sensor-Version and the value
-    "1" otherwise returns with HTTP 406 Not Acceptable
-    :param f:
-    :return:
-    """
-
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        if "X-Sensor-Version" not in request.headers:
-            return Response("No version header provided", 406)
-        if request.headers["X-Sensor-Version"] != "1":
-            return Response("Wrong api version", 406)
-        return f(*args, **kwargs)
-
-    return decorated
-
-
-class ApiResource(Resource):
-    method_decorators = [check_api_version_header]
-
-
-class UsersResource(ApiResource):
+class UsersResource(Resource):
     def post(self):
         data = request.json
         if not data or ("email" not in data and "password" not in data):
@@ -84,7 +60,7 @@ class UserConfimResource(Resource):
             return {"message": "User not found"}, 400
 
 
-class SensorNodes(ApiResource):
+class SensorNodes(Resource):
     def post(self):
         data = request.data.decode("utf-8")
         data = json.loads(data)
@@ -121,7 +97,7 @@ class SensorNodes(ApiResource):
             return {"message": "User not found or not approved"}, 412
 
 
-class SensorNodeMetrics(ApiResource):
+class SensorNodeMetrics(Resource):
     def post(self, node_id):
         if "X-Sensor-Api-Key" not in request.headers:
             return {"message": "No API key in header found"}, 401
