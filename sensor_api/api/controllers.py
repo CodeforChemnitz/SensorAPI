@@ -175,6 +175,7 @@ class SensorNodeMetrics(ApiResource):
                 )
                 db.session.add(reading_type)
 
+        """
         collection = SensorReadingCollection(sensor_node=sensor_node)
         db.session.add(collection)
         for reading in data:
@@ -188,7 +189,32 @@ class SensorNodeMetrics(ApiResource):
                 collection=collection
             )
             db.session.add(sensor_reading)
-
+        """
         db.session.commit()
+
+        metrics = []
+        for reading in data:
+            idx, sensor_type, value_type, value = reading
+            metrics.append({
+                "measurement": "temp",
+                "tags": {
+                    # Node Id
+                    "ni": sensor_node.id,
+                    # Sensor Id
+                    "si": idx
+                },
+                "time": utc_now.isoformat(),
+                "fields": {
+                    "value": value
+                }
+            })
+
+        from influxdb import InfluxDBClient
+        client = InfluxDBClient(
+            host="localhost",
+            port=8086,
+            database="metrics"
+        )
+        client.write_points(metrics)
 
         return {}
