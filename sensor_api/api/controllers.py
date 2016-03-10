@@ -87,7 +87,7 @@ class UserConfimResource(ApiResource):
 
 class SensorNodes(ApiResource):
     def get(self):
-        nodes = []
+        nodes = {}
         for node in models.SensorNode.query.all():
             node_data = {
                 "id": node.api_id.hex
@@ -99,8 +99,40 @@ class SensorNodes(ApiResource):
                 node_data["geo_lat"] = float(node.geo_latitude)
                 node_data["geo_lng"] = float(node.geo_longitude)
 
-            nodes.append(node_data)
-        return nodes
+            node_data["current_values"] = {}
+
+            nodes[node.id] = node_data
+
+        from influxdb import InfluxDBClient
+        client = InfluxDBClient(
+            host="localhost",
+            port=8086,
+            database="metrics"
+        )
+
+        for meta, value in client.query("select LAST(value) from temp GROUP BY ni, si;").items():
+            values = next(value)
+            meta = meta[1]
+            if not meta:
+                continue
+
+            node_id = meta.get("ni")
+            if not node_id:
+                continue
+
+            try:
+                node_id = int(node_id)
+            except ValueError:
+                continue
+            if node_id not in nodes:
+                continue
+
+            node = nodes[node_id]
+            node["current_values"]["temperature"] = {
+                "value": values.get("last")
+            }
+
+        return list(nodes.values())
 
     def post(self):
         data = request.data.decode("utf-8")
