@@ -7,6 +7,7 @@
 
 	<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
     <script src="{{ url_for('static', filename='js/leaflet.markercluster.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/leaflet.extra-markers.min.js') }}"></script>
 	<script>
         (function( global, factory ) {
 		var map = L.map('map').setView([50.832222, 12.924167], 13);
@@ -30,16 +31,39 @@
         }).done(function (data) {
             $.each(data, function (key, val) {
                 console.log(val);
-                var marker = L.marker(new L.LatLng(val['geo_lat'], val['geo_lng']), {node_id:val['id']});
+                var marker = L.marker(
+                	new L.LatLng(val['geo_lat'], val['geo_lng']),
+                	{
+                		node_id:val['id'],
+                		current_values: val['current_values']
+                	}
+                );
                 markers.addLayer(marker);
             });
-            /*
+
             markers.eachLayer(function (layer) {
-                var myIcon = L.divIcon({html: '2°C'});
+            	if("temperature" in layer.options.current_values) {
+            		var myIcon = L.ExtraMarkers.icon({
+            			extraClasses: 'small',
+						markerColor: 'blue',
+						prefix: 'fa',
+						icon: 'fa-number',
+						number: layer.options.current_values['temperature']['value'] + '°',
+						shape: 'square',
+					});
+            	} else {
+					var myIcon = L.ExtraMarkers.icon({
+						markerColor: 'gray',
+						prefix: 'fa',
+						icon: 'fa-number',
+						number: 'n/a'
+                	});
+				}
+                //L.divIcon({InnerHTML: '2°C'});
                 console.log(layer);
-                //layer.setIcon(myIcon);
-                layer.bindPopup('Hello');
-            });*/
+                layer.setIcon(myIcon);
+                //layer.bindPopup('Hello');
+            });
         });
         })();
 	</script>
