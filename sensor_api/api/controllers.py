@@ -171,6 +171,25 @@ class SensorNodes(ApiResource):
 
 
 class SensorNodeMetrics(ApiResource):
+    def get(self, node_id):
+        sensor_node = db.session.query(SensorNode).filter(SensorNode.api_id == node_id).first()
+        if not sensor_node:
+            return {"message": "SensorNode not found"}, 404
+
+        metrics = {}
+
+        for reading_type in sensor_node.reading_types:
+            sensor_index = reading_type.sensor_index
+            if sensor_index not in metrics:
+                metrics[sensor_index] = []
+
+            metrics[sensor_index].append({
+                "sensor_type": reading_type.sensor_type,
+                "value_type": reading_type.value_type
+            })
+
+        return metrics
+
     def post(self, node_id):
         if "X-Sensor-Api-Key" not in request.headers:
             return {"message": "No API key in header found"}, 401
