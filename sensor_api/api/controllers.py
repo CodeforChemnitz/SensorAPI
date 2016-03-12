@@ -269,3 +269,30 @@ class SensorNodeMetrics(ApiResource):
         client.write_points(metrics)
 
         return {}
+
+
+class SensorNodeReading(ApiResource):
+    def get(self, node_id, sensor_id, value_type):
+        sensor_node = db.session.query(SensorNode).filter(SensorNode.api_id == node_id).first()
+
+        query = "SELECT value FROM temp WHERE ni='{node_id:d}' AND si='{sensor_id:d}'".format(
+            node_id=sensor_node.id,
+            sensor_id=sensor_id
+        )
+
+        from influxdb import InfluxDBClient
+        client = InfluxDBClient(
+            host="localhost",
+            port=8086,
+            database="metrics"
+        )
+        result = client.query(query)
+        values = []
+        for p in result.get_points():
+            values.append({
+                "date": p["time"],
+                "value": p["value"]
+            })
+        return {
+            "values": values
+        }
