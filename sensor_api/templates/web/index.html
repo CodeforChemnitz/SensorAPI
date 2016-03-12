@@ -10,6 +10,16 @@
 	<script src="{{ url_for('static', filename='js/leaflet.extra-markers.min.js') }}"></script>
 	<script>
         (function( global, factory ) {
+		var prepare_data = function(data, accessor) {
+			data = data.map(function(d) {
+				var fff = d3.time.format.utc('%Y-%m-%dT%H:%M:%S.%LZ');
+				var tmp = d[accessor].replace(/\.([0-9]{0,3})[0-9]*Z/, '.$1Z');
+				console.log(tmp);
+				d[accessor] = fff.parse(tmp);
+				return d;
+			});
+			return data;
+		};
 		var map = L.map('map').setView([50.832222, 12.924167], 13);
 
 		var layer = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw', {
@@ -36,6 +46,30 @@
                 	{
                 		node_id:val['id'],
                 		current_values: val['current_values']
+                	}
+                );
+                marker.on(
+                	'click',
+                	function(e) {
+                		var modal = $('#sensorNodeModal');
+                		console.log(e);
+                		modal.data('node_id', e.target.options.node_id);
+                		modal.modal('show');
+                		d3.json('/api/v1/nodes/' + e.target.options.node_id + '/metrics/0/temp', function(data) {
+                			data = data['values'];
+							data = prepare_data(data, 'date');
+							MG.data_graphic({
+								title: "Temperatur",
+								description: "",
+								data: data,
+								width: 600,
+								height: 200,
+								right: 40,
+								target: modal.find('.modal-body')[0],
+								x_accessor: 'date',
+								y_accessor: 'value'
+							});
+						});
                 	}
                 );
                 markers.addLayer(marker);
