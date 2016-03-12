@@ -14,6 +14,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from sensor_api.models import User, SensorNode, SensorReading, SensorReadingType, SensorReadingCollection
 
 from sensor_api import db, app, models
+from sensor_api.helper import value_types
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
@@ -246,8 +247,9 @@ class SensorNodeMetrics(ApiResource):
         metrics = []
         for reading in data:
             idx, sensor_type, value_type, value = reading
+            value_name = value_types.get_short_name(value_type)
             metrics.append({
-                "measurement": "temp",
+                "measurement": value_name,
                 "tags": {
                     # Node Id
                     "ni": sensor_node.id,
@@ -275,9 +277,16 @@ class SensorNodeReading(ApiResource):
     def get(self, node_id, sensor_id, value_type):
         sensor_node = db.session.query(SensorNode).filter(SensorNode.api_id == node_id).first()
 
-        query = "SELECT value FROM temp WHERE ni='{node_id:d}' AND si='{sensor_id:d}'".format(
+        value_type_id = value_types.get_id(value_type)
+        if value_type_id is None:
+            return {"message": "Not found"}, 404
+
+        value_name = value_types.get_short_name(value_type_id)
+
+        query = "SELECT value FROM {value_name} WHERE ni='{node_id:d}' AND si='{sensor_id:d}'".format(
             node_id=sensor_node.id,
-            sensor_id=sensor_id
+            sensor_id=sensor_id,
+            value_name=value_name
         )
 
         from influxdb import InfluxDBClient
