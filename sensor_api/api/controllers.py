@@ -184,8 +184,10 @@ class SensorNodeMetrics(ApiResource):
             if sensor_index not in metrics:
                 metrics[sensor_index] = []
 
+            value_name = value_types.get_name(reading_type.value_type)
             metrics[sensor_index].append({
                 "sensor_type": reading_type.sensor_type,
+                "value_name": value_name,
                 "value_type": reading_type.value_type
             })
 
