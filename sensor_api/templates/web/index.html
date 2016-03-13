@@ -58,6 +58,10 @@
           url: "/api/v1/nodes"
         }).done(function (data) {
             $.each(data, function (key, val) {
+                if(!('geo_lat' in val && 'geo_lng' in val)) {
+                    // Don't create marker if geo position is missing
+                    return;
+                }
                 console.log(val);
                 var marker = L.marker(
                     new L.LatLng(val['geo_lat'], val['geo_lng']),
