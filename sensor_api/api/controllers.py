@@ -197,7 +197,10 @@ class SensorNodeMetrics(ApiResource):
         if "X-Sensor-Api-Key" not in request.headers:
             return {"message": "No API key in header found"}, 401
 
-        sensor_node = db.session.query(SensorNode).filter(SensorNode.api_id == node_id).one()
+        sensor_node = db.session.query(SensorNode).filter(SensorNode.api_id == node_id).first()
+        if sensor_node is None:
+            return {"message": "Node not found"}, 404
+
         if sensor_node.api_key.hex != request.headers["X-Sensor-Api-Key"]:
             return {"message": "Invalid API key"}, 401
 
