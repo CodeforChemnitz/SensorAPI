@@ -72,7 +72,7 @@ def login():
         flask.flash("Unable to login")
 
     return render_template(
-        "login.html",
+        "admin/login.html",
         form=form
     )
 
@@ -99,4 +99,4 @@ def register():
         flash("User successfully registered")
         return redirect(url_for("admin.login"))
 
-    return render_template("register.html", form=form)
+    return render_template("admin/register.html", form=form)
