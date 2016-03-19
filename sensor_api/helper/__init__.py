@@ -1,4 +1,4 @@
-from sensor_api import login_manager, models
+from sensor_api import login_manager
 
 
 class ValueTypeMapper(object):
@@ -30,6 +30,7 @@ class ValueTypeMapper(object):
 
 @login_manager.user_loader
 def load_user(user_id):
+    from sensor_api import models
     return models.User.query.get(int(user_id))
 
 value_types = ValueTypeMapper()
